@@ -1,0 +1,9 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "env": {
+    "EMBRACE_API_KEY": "@embrace_api_key",
+    "EMBRACE_ORG_ID": "@embrace_org_id"
+  }
+}
