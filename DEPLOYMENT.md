@@ -1,378 +1,277 @@
-# Deployment Guide - Login Funnel Dashboard
+# Deployment Guide
 
-## 📦 Project Created Successfully! ✅
+This guide provides step-by-step instructions for deploying the Login Events & Funnel Analytics Dashboard to Vercel.
 
-Your live login funnel dashboard is ready to deploy to Vercel.
+## Prerequisites
 
-**Location:** `/Users/a42970/login-funnel-dashboard`
+- Git repository initialized and pushed to GitHub
+- Vercel account (free tier available at https://vercel.com)
+- Embrace API credentials ready
 
----
+## Option 1: Deploy via Vercel Dashboard (Recommended)
 
-## 🚀 Quick Start (2 minutes)
-
-### 1. Install & Test Locally
+### Step 1: Push to GitHub
 
 ```bash
-cd /Users/a42970/login-funnel-dashboard
-npm install
-npm run dev
+# Initialize git (if not already done)
+git init
+git add .
+git commit -m "Initial commit: Login Funnel Dashboard"
+
+# Add remote and push
+git remote add origin <your-github-repo-url>
+git branch -M main
+git push -u origin main
 ```
 
-Visit `http://localhost:5173` - You should see the dashboard with mock data.
+### Step 2: Connect to Vercel
 
-### 2. Deploy to Vercel (One Command)
+1. Go to https://vercel.com/new
+2. Click "Import Git Repository"
+3. Select your GitHub repository
+4. Click "Import"
+
+### Step 3: Configure Environment Variables
+
+1. In the Vercel project settings, go to **Environment Variables**
+2. Add the following variables:
+   - **Name**: `EMBRACE_API_KEY` → **Value**: Your Embrace API key
+   - **Name**: `EMBRACE_ORG_ID` → **Value**: Your Embrace organization ID
+
+3. Make sure both variables are set for all environments (Production, Preview, Development)
+
+### Step 4: Deploy
+
+1. Click "Deploy"
+2. Wait for the build to complete
+3. Your dashboard is now live!
+
+**Your dashboard URL**: `https://<project-name>.vercel.app`
+
+## Option 2: Deploy via Vercel CLI
+
+### Step 1: Install Vercel CLI
 
 ```bash
 npm install -g vercel
-vercel
 ```
 
-Follow the interactive prompts:
-- Connect GitHub account
-- Select framework: **Vite**
-- Build command: `npm run build`
-- Output directory: `dist`
-- Deploy!
+### Step 2: Authenticate
 
-Your live dashboard URL will be displayed. 🎉
-
----
-
-## 📋 What's Included
-
-### Frontend Components
-✅ **FunnelVisualization.jsx** - Interactive funnel chart with Recharts  
-✅ **MetricsCard.jsx** - Key metrics display (success rate, conversions, etc.)  
-✅ **EventsTable.jsx** - Detailed events breakdown table  
-✅ **App.jsx** - Main dashboard with auto-refresh (1 min interval)  
-
-### Backend API
-✅ **api/funnel.js** - Vercel serverless function (returns mock data)  
-✅ **api/embrace-integration.js** - Real Embrace API integration example  
-✅ **src/api/embrace.js** - Frontend API client  
-
-### Configuration
-✅ **vite.config.js** - Vite build configuration  
-✅ **tailwind.config.js** - Tailwind CSS theming  
-✅ **vercel.json** - Vercel deployment config  
-✅ **package.json** - Dependencies (React, Recharts, TailwindCSS)  
-
-### Documentation
-✅ **README.md** - Complete feature documentation  
-✅ **SETUP.md** - Detailed setup instructions  
-✅ **DEPLOYMENT.md** - This file  
-
----
-
-## 🔌 Connecting Real Embrace Data
-
-### Option 1: Use Mock Data (Fastest)
-
-The dashboard works immediately with mock data showing:
-- 12 users through login funnel
-- 276 total events
-- 58.3% success rate
-- 5-step login process visualization
-
-Perfect for testing UI and deployment.
-
-### Option 2: Connect Real Data (Requires API Key)
-
-1. **Get Embrace API credentials:**
-   - Login to [app.embrace.io](https://app.embrace.io)
-   - Settings → API Keys
-   - Copy API Key and Organization ID
-
-2. **Update api/funnel.js:**
-
-```javascript
-import { getCombinedFunnelData } from './embrace-integration.js'
-
-export default async function handler(req, res) {
-  try {
-    const data = await getCombinedFunnelData()
-    res.status(200).json(data)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
-}
-```
-
-3. **Set environment variables in Vercel:**
-   - Go to Vercel dashboard → Your Project → Settings → Environment Variables
-   - Add:
-     ```
-     EMBRACE_API_KEY=your_key_here
-     EMBRACE_ORG_ID=your_org_id
-     VITE_IOS_APP_ID=cPBea
-     VITE_ANDROID_APP_ID=hNH8N
-     ```
-
-4. **Redeploy:**
 ```bash
+vercel login
+```
+
+### Step 3: Deploy
+
+```bash
+# First deploy (creates new project)
+vercel
+
+# Then set environment variables interactively or via dashboard
+
+# Production deploy
 vercel --prod
 ```
 
----
+## Environment Variables
 
-## 📊 Dashboard Features
+### Required Variables
 
-### Live Updates
-- Auto-refreshes every 60 seconds (configurable)
-- Manual refresh button
-- Last update timestamp
-- Pause/Resume auto-refresh
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `EMBRACE_API_KEY` | Embrace API authentication key | `abc123xyz...` |
+| `EMBRACE_ORG_ID` | Embrace organization ID | `org_12345` |
 
-### Metrics Display
-- 👥 Total Users
-- 📊 Total Events
-- ✅ Success Rate
-- 📈 Conversion Rate
+### How to Get Credentials
 
-### Visualizations
-- 📈 Funnel flow chart (visual bars showing user progression)
-- 📊 Bar chart (user count by event)
-- 📋 Events table (detailed breakdown)
+1. **Embrace API Key**
+   - Log in to your Embrace dashboard
+   - Go to Settings → API Keys
+   - Create a new API key or use existing one
 
-### Performance
-- ⚡ Built with Vite (fast HMR)
-- 🎨 Tailwind CSS (optimized styling)
-- 📦 Recharts (lightweight charts)
-- 🚀 Deployed on Vercel (CDN + edge functions)
+2. **Organization ID**
+   - Log in to your Embrace dashboard
+   - Go to Settings → Organization
+   - Copy your Organization ID
 
----
+## Build Configuration
 
-## 🛠️ Customization
+The project uses the following configuration (defined in `vercel.json`):
 
-### Change Refresh Interval
-
-Edit `src/App.jsx` line 32:
-```javascript
-const interval = setInterval(() => {
-  loadData()
-}, 30000) // Every 30 seconds instead of 60
-```
-
-### Add More Metrics
-
-Update `src/App.jsx` metrics grid (lines 75-86):
-```javascript
-<MetricsCard
-  title="Abandonment Rate"
-  value={`${funnelData.metrics.abandonmentRate.toFixed(1)}%`}
-  icon="❌"
-/>
-```
-
-### Change Color Scheme
-
-Edit `tailwind.config.js`:
-```javascript
-colors: {
-  primary: '#FF6B6B',    // Your brand color
-  success: '#51CF66',
-  warning: '#FFD93D',
-  danger: '#FF6B6B',
+```json
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "outputDirectory": "dist",
+  "framework": "vite"
 }
 ```
 
-### Add More Apps
+## Verify Deployment
 
-In `api/funnel.js`, add app IDs:
-```javascript
-const apps = [
-  'cPBea',    // AUS Consumer iOS
-  'hNH8N',    // AUS Consumer Android
-  'new_app'   // Add here
-]
-```
+1. Navigate to your Vercel dashboard
+2. Select the project
+3. Check the latest deployment status
+4. Click the deployment URL to test the dashboard
 
----
+### Test the Dashboard
 
-## 🔒 Security Checklist
+After deployment:
+1. Open the dashboard URL
+2. Click the "Refresh" button
+3. Verify that data loads from your Embrace API
+4. Test app switching (iOS/Android)
+5. Test time period selection
+6. Test search in the events table
 
-Before deploying to production:
+## Troubleshooting
 
-✅ **Environment Variables**
-- Never commit `.env` files
-- Use Vercel Environment Variables for secrets
-- Rotate API keys regularly
+### Build Fails
 
-✅ **API Security**
-- Validate all API requests
-- Use CORS policies appropriately
-- Add rate limiting if needed
+**Issue**: `npm: not found` or build fails during dependency installation
 
-✅ **Data Protection**
-- User data is read-only (no modifications)
-- No sensitive data in client-side logs
-- Encrypt API keys in transit
+**Solution**:
+- Check `package.json` has correct dependencies
+- Ensure Node.js version is compatible (16+)
+- Clear cache: `vercel env pull` then redeploy
 
-✅ **Access Control**
-- Optional: Add authentication to dashboard
-- Log access attempts
-- Monitor for suspicious activity
+### API Returns 500 Error
 
----
+**Issue**: Dashboard shows "Error: Request failed with status code 500"
 
-## 📈 Monitoring & Analytics
+**Solution**:
+- Verify `EMBRACE_API_KEY` and `EMBRACE_ORG_ID` are set correctly
+- Check Embrace API documentation for endpoint format
+- Review Vercel function logs: Dashboard → Deployments → Function logs
 
-### Vercel Analytics
-Vercel automatically provides:
-- Build times & deployment history
-- Runtime logs
-- Function invocations
-- Error tracking
+**To view logs**:
+1. Go to Vercel Dashboard
+2. Select your project
+3. Go to "Functions" tab
+4. Click on `login-events` function
+5. Review the logs
 
-Access via: Vercel Dashboard → Your Project → Analytics
+### Environment Variables Not Loaded
 
-### Application Monitoring
-Add your own monitoring:
-```javascript
-// In App.jsx
-useEffect(() => {
-  console.log('Dashboard loaded', { timestamp: new Date() })
-  // Send to your monitoring service
-}, [])
-```
+**Issue**: Function shows error about missing env variables
 
----
+**Solution**:
+1. Ensure variables are set in Vercel dashboard (not just in `.env` file)
+2. Redeploy after adding variables: `vercel --prod`
+3. Check that variables are set for "Production" environment
 
-## 🐛 Common Issues & Solutions
+### CORS Errors
 
-### Issue: "Cannot GET /api/funnel"
-**Solution:** 
-- Ensure `api/funnel.js` is in the root directory
-- Rebuild and redeploy: `vercel --prod`
-- Check Vercel function logs
+**Issue**: "CORS policy: No 'Access-Control-Allow-Origin' header"
 
-### Issue: No data appears on dashboard
-**Solution:**
-- Check browser console (F12) for errors
-- Verify API endpoint is accessible
-- Check environment variables are set
-- Ensure `api/funnel.js` returns correct data format
+**Solution**:
+- The CORS headers are already configured in `api/login-events.js`
+- If errors persist, check Embrace API CORS settings
+- May need to whitelist your Vercel domain in Embrace settings
 
-### Issue: Dashboard loads slowly
-**Solution:**
-- Increase refresh interval (see customization)
-- Optimize API response time
-- Check network tab in DevTools
-- Review Vercel function duration logs
+## Monitoring & Maintenance
 
-### Issue: Vercel build fails
-**Solution:**
+### Analytics
+
+1. Go to Vercel Dashboard
+2. Select your project
+3. View "Analytics" tab for:
+   - Page load times
+   - Web vitals
+   - Error rates
+
+### Logs
+
+View real-time logs:
 ```bash
-# Test build locally first
-npm run build
-
-# Check for errors
-npm run dev
-
-# If still failing, try:
-rm -rf .vercel dist node_modules
-npm install
-npm run build
+vercel logs <project-name> --follow
 ```
 
----
-
-## 📱 Mobile Responsiveness
-
-The dashboard is fully responsive:
-- ✅ Mobile (< 640px)
-- ✅ Tablet (640px - 1024px)
-- ✅ Desktop (> 1024px)
-
-Test on mobile:
+View function logs:
 ```bash
-npm run dev
-# Visit http://your-local-ip:5173 from your phone
+vercel logs <project-name> --follow --function=login-events
 ```
 
+## Database & Persistence
+
+This dashboard doesn't use a database—it fetches data directly from Embrace API on demand. The "manual refresh" pattern means:
+- No data is cached server-side
+- Each refresh fetches fresh data from Embrace
+- No user data is stored
+
+## Custom Domain
+
+To use a custom domain:
+
+1. Go to Vercel Dashboard → Project Settings → Domains
+2. Click "Add"
+3. Enter your domain
+4. Follow DNS configuration instructions for your domain registrar
+
+## CI/CD
+
+Vercel automatically:
+- Deploys on `git push` to main
+- Creates preview deployments for pull requests
+- Runs your build and test commands
+
+## Rollback
+
+To rollback to a previous deployment:
+
+1. Go to Vercel Dashboard → Deployments
+2. Find the deployment you want to rollback to
+3. Click the three dots menu
+4. Select "Promote to Production"
+
+## Performance Optimization
+
+Current optimizations:
+- Vite bundling with code splitting
+- Tailwind CSS with purge enabled
+- React 18 with Suspense-ready components
+- Gzip compression (handled by Vercel)
+
+To further optimize:
+- Enable Image Optimization if adding images
+- Use Vercel's built-in CDN (automatic)
+
+## Updating the Dashboard
+
+To update after deployment:
+
+1. Make changes locally
+2. Test with `npm run dev`
+3. Build: `npm run build`
+4. Commit and push: `git push origin main`
+5. Vercel automatically redeploys
+
+## Removing Sensitive Data
+
+Before committing:
+- Ensure `.env` file is in `.gitignore` ✓
+- Don't commit API keys ✓
+- Use Vercel environment variables instead ✓
+
+## Support & Resources
+
+- **Vercel Docs**: https://vercel.com/docs
+- **Embrace API Docs**: https://embrace.io/docs/api
+- **Vite Docs**: https://vitejs.dev
+- **React Docs**: https://react.dev
+- **Tailwind CSS**: https://tailwindcss.com
+
+## Next Steps
+
+After successful deployment:
+
+1. ✅ Share the dashboard URL with your team
+2. ✅ Set up monitoring alerts in Vercel
+3. ✅ Document any custom Embrace API configurations
+4. ✅ Plan regular updates and new features
+5. ✅ Gather feedback from users
+
 ---
 
-## 🔄 CI/CD Integration
-
-### GitHub Actions (Optional)
-
-Create `.github/workflows/deploy.yml`:
-```yaml
-name: Deploy to Vercel
-on:
-  push:
-    branches: [main]
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - run: npm ci && npm run build
-      - run: npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
-```
-
----
-
-## 📞 Support & Resources
-
-### Documentation
-- [Embrace API Docs](https://embrace.io/docs/api)
-- [React Docs](https://react.dev)
-- [Vite Guide](https://vitejs.dev)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Recharts](https://recharts.org)
-- [Vercel Docs](https://vercel.com/docs)
-
-### Getting Help
-1. Check the README.md for detailed feature docs
-2. Review SETUP.md for configuration help
-3. Check Vercel deployment logs for errors
-4. Inspect browser console (F12) for JavaScript errors
-
----
-
-## ✨ Next Steps
-
-1. **Install & Test**
-   ```bash
-   npm install
-   npm run dev
-   ```
-
-2. **Deploy**
-   ```bash
-   vercel
-   ```
-
-3. **Share Dashboard**
-   - Get your Vercel URL
-   - Share with team
-   - Monitor live funnel data
-
-4. **Integrate Real Data** (Optional)
-   - Set up Embrace API credentials
-   - Update `api/funnel.js`
-   - Redeploy with real data
-
----
-
-## 🎉 Congratulations!
-
-Your live login funnel dashboard is ready to go!
-
-**Features:**
-- ✅ Real-time updates
-- ✅ Beautiful visualizations  
-- ✅ Production-ready on Vercel
-- ✅ Fully customizable
-- ✅ Mock data included for instant testing
-- ✅ Easy integration with real Embrace API
-
-Get started: `npm install && npm run dev`
-
-Deploy: `vercel`
-
-Enjoy! 🚀
+**Deployment completed!** 🎉 Your dashboard is now live and tracking login funnel metrics.

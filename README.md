@@ -1,230 +1,255 @@
-# Login Funnel Dashboard - Live
+# Login Events & Funnel Analytics Dashboard
 
-A real-time login funnel analytics dashboard built with React, Vite, and Embrace Analytics API.
+A real-time login conversion tracking dashboard powered by Embrace. Track login events, visualize the complete login funnel, and analyze user progression through the authentication flow.
 
 ## Features
 
-✨ **Live Updates** - Auto-refreshing dashboard that updates every minute  
-📊 **Visual Funnel** - Interactive funnel visualization with bar charts  
-📈 **Real-time Metrics** - Track success rates, conversions, and user counts  
-🎨 **Modern UI** - Dark theme dashboard with Tailwind CSS  
-⚡ **Fast Performance** - Built with Vite for lightning-fast builds  
-🚀 **Vercel Ready** - Deploy to Vercel with one command  
+- **7-Step Login Funnel**: Visualize the complete login journey with detailed metrics
+  - Login Screen Viewed
+  - OTP/Credentials Entry
+  - Verification Complete
+  - Auth Request Sent
+  - Authentication Success
+  - Profile Setup
+  - Session Complete
 
-## Setup
+- **Detailed Event Table**: Browse all login events with sortable columns and advanced filtering
+  - Time, Event Name, Category, Action/Label, Key Fields
+  - Click-to-expand rows for more details
+  - Real-time search across all event fields
+
+- **Session Context**: View session metadata at a glance
+  - Login method (Email OTP, Phone OTP, etc.)
+  - User identity and email
+  - GA Instance ID
+  - Session duration and status
+
+- **Multi-App Support**: Track login events across iOS and Android apps
+- **Time Period Selection**: View data for custom time windows (1d, 3d, 7d, 14d, 30d)
+- **Manual Refresh**: Control when data is fetched—no automatic polling
+- **Summary Statistics**: Entry points, successful completions, and overall conversion rates
+
+## Tech Stack
+
+- **Frontend**: React 18 with Vite
+- **Styling**: Tailwind CSS
+- **HTTP Client**: Axios
+- **Backend**: Node.js Express (development), Vercel Serverless Functions (production)
+- **Data Source**: Embrace Logs API
+
+## Setup & Installation
 
 ### Prerequisites
-- Node.js 16+ installed
-- npm or yarn package manager
-- Embrace Analytics account with API access
+- Node.js 16+ and npm
+- Embrace API Key
+- Vercel account (for deployment)
 
 ### Local Development
 
-1. **Install dependencies:**
-```bash
-cd login-funnel-dashboard
-npm install
-```
+1. **Clone and install dependencies**
+   ```bash
+   npm install
+   ```
 
-2. **Create environment variables:**
-Create a `.env.local` file:
-```
-VITE_API_URL=http://localhost:3000
-```
+2. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   # Add your Embrace API credentials
+   ```
 
-3. **Start development server:**
-```bash
-npm run dev
-```
+3. **Start development servers**
+   ```bash
+   # In one terminal
+   npm run dev
 
-The app will be available at `http://localhost:5173`
+   # In another terminal
+   npm run dev-api
+   ```
 
-### API Configuration
+   Or run both simultaneously:
+   ```bash
+   npm run dev-all
+   ```
 
-The dashboard fetches data from `/api/funnel` endpoint. To connect real Embrace data:
+4. **Open in browser**
+   Navigate to http://localhost:5175
 
-1. Update `api/funnel.js` with your Embrace API credentials
-2. Replace the mock data with actual API calls to Embrace MCP tools
-3. Example implementation:
+## API Integration
 
-```javascript
-// In api/funnel.js
-import { fetchLoginEvents } from '../src/api/embrace'
+### Development
 
-export default async function handler(req, res) {
-  try {
-    const data = await fetchLoginEvents({
-      appIds: ['cPBea', 'hNH8N'],
-      timeWindow: 'last_7_days'
-    })
-    res.status(200).json(data)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
-}
-```
+The dev server uses mock data for testing. To connect to real Embrace data:
 
-## Deployment to Vercel
+1. Add your Embrace API key to `dev-server.js`
+2. Implement the Embrace API call logic
 
-### Option 1: Using Vercel CLI
+### Production (Vercel)
 
-1. Install Vercel CLI:
-```bash
-npm install -g vercel
-```
+The production deployment uses Vercel Serverless Functions (`api/login-events.js`).
 
-2. Deploy:
-```bash
-npm run deploy
-```
-
-3. Follow the prompts to set up your Vercel project
-
-### Option 2: GitHub Integration
-
-1. Push code to GitHub:
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/yourusername/login-funnel-dashboard
-git push -u origin main
-```
-
-2. Go to [Vercel Dashboard](https://vercel.com)
-3. Click "New Project" → Import GitHub repo
-4. Configure environment variables
-5. Deploy
-
-### Environment Variables on Vercel
-
-Add these in Vercel project settings:
-- `VITE_API_URL` - Your API endpoint
-- `EMBRACE_API_KEY` - Your Embrace API key (if needed)
+**Environment Variables Required:**
+- `EMBRACE_API_KEY` - Your Embrace API authentication key
 - `EMBRACE_ORG_ID` - Your Embrace organization ID
-
-## Building for Production
-
-```bash
-npm run build
-```
-
-This creates optimized production build in the `dist/` folder.
 
 ## Project Structure
 
 ```
-login-funnel-dashboard/
+login-funnel-prototype/
 ├── src/
 │   ├── components/
-│   │   ├── FunnelVisualization.jsx
-│   │   ├── MetricsCard.jsx
-│   │   └── EventsTable.jsx
-│   ├── api/
-│   │   └── embrace.js
-│   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css
+│   │   ├── Header.jsx              # Top header with filters
+│   │   ├── SessionHeader.jsx       # Session context box
+│   │   ├── LoginFunnel.jsx         # 7-step funnel visualization
+│   │   └── LoginEventsTable.jsx    # Events table with sorting
+│   ├── utils/
+│   │   └── dataProcessor.js        # Data transformation utilities
+│   ├── App.jsx                     # Main app component
+│   ├── main.jsx                    # React entry point
+│   └── index.css                   # Tailwind & custom styles
 ├── api/
-│   └── funnel.js              (Vercel serverless function)
+│   └── login-events.js             # Vercel serverless function
 ├── public/
-├── index.html
-├── vite.config.js
-├── tailwind.config.js
-├── postcss.config.js
-├── vercel.json
-└── package.json
+│   └── index.html                  # HTML template
+├── vite.config.js                  # Vite configuration
+├── tailwind.config.js              # Tailwind configuration
+└── package.json                    # Dependencies & scripts
 ```
 
-## Data Format
+## Key Components
 
-The `/api/funnel` endpoint should return data in this format:
+### Header.jsx
+- Manual refresh button
+- App selector (iOS/Android)
+- Time period dropdown (1d, 3d, 7d, 14d, 30d)
+- Last updated timestamp
+
+### SessionHeader.jsx
+- Yellow bordered box with session details
+- Login method, user identity, GA instance
+- Duration, status, event count, user count
+
+### LoginFunnel.jsx
+- 7-step visual funnel with progress bars
+- Per-step metrics: conversion %, duration, event count, drop-off
+- Summary section: Entry points, successful conversions, overall conversion rate
+
+### LoginEventsTable.jsx
+- Sortable columns (click header to sort)
+- Color-coded status indicators with emojis
+- Search filtering across all fields
+- Footer with totals: Total Events, Unique Users, Success Rate
+
+## Deployment
+
+### Deploy to Vercel
+
+1. **Connect your repository**
+   ```bash
+   npm install -g vercel
+   vercel
+   ```
+
+2. **Set environment variables in Vercel dashboard**
+   - Go to Project Settings → Environment Variables
+   - Add `EMBRACE_API_KEY` and `EMBRACE_ORG_ID`
+
+3. **Deploy**
+   ```bash
+   vercel --prod
+   ```
+
+### Configure vercel.json
+
+The `vercel.json` file is pre-configured with:
+- Build command: `npm run build`
+- Output directory: `dist`
+- Framework: Vite
+- Environment variables setup
+
+## Data Processing
+
+The `dataProcessor.js` utility handles:
+
+- **processLoginEvents()** - Transform raw Embrace API response into dashboard format
+- **mapEventToStage()** - Map events to funnel steps with color coding
+- **getStatusEmoji()** - Return emoji based on event type
+- **getStatusColor()** - Return Tailwind color class for event status
+- **FUNNEL_STEPS** - Define the 7-step login flow
+
+## Styling
+
+The dashboard uses Tailwind CSS with custom colors:
+- Primary: `#3B82F6` (Blue)
+- Success: `#10B981` (Green)
+- Warning: `#F59E0B` (Amber)
+- Error: `#EF4444` (Red)
+
+Custom animations:
+- Spinner animation for loading state
+- Skeleton loading effect
+- Smooth transitions on hover
+
+## API Response Format
+
+The API expects a response in this format:
 
 ```json
 {
-  "funnel": [
-    {
-      "name": "Login Initiated",
-      "description": "Users started login",
-      "users": 12,
-      "conversion": 100
-    },
-    // ... more funnel steps
-  ],
-  "events": [
-    {
-      "name": "Login Event",
-      "message": "login_actions",
-      "count": 178,
-      "users": 12,
-      "conversion": 100,
-      "type": "success"
-    },
-    // ... more events
-  ],
-  "metrics": {
-    "totalUsers": 12,
-    "totalEvents": 276,
-    "successRate": 58.3,
-    "conversionRate": 41.7,
-    "timeRange": "Last 7 days"
-  },
-  "timestamp": "2026-06-30T10:00:00Z"
+  "success": true,
+  "data": {
+    "loginMethod": "EMAIL_OTP",
+    "userName": "Abhishek",
+    "userEmail": "user@example.com",
+    "gaInstance": "INSTANCE_ID",
+    "duration": "2 min 45 sec",
+    "status": "✓ Success",
+    "events": [
+      {
+        "timestamp": "2026-07-01T18:27:14Z",
+        "message": "event_name",
+        "type": "info|success|warning|error|profile",
+        "category": "category_name",
+        "actionLabel": "action_label",
+        "keyFields": "key_fields",
+        "count": 1,
+        "unique_users": 1
+      }
+    ]
+  }
 }
 ```
 
-## Customization
+## Browser Support
 
-### Update Refresh Interval
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
 
-Edit `src/App.jsx` line 32:
-```javascript
-const interval = setInterval(() => {
-  loadData()
-}, 60000) // Change to desired milliseconds
-```
+## Performance Notes
 
-### Change Colors
+- Total bundle size: ~205 KB (gzipped: ~67 KB)
+- Manual refresh only - no automatic polling
+- Client-side data processing
+- Efficient re-renders with React 18
 
-Update color values in `tailwind.config.js`:
-```javascript
-colors: {
-  primary: '#3B82F6',
-  success: '#10B981',
-  // ...
-}
-```
+## Future Enhancements
 
-### Modify Dashboard Layout
-
-Edit components in `src/components/` to change layout and styling.
-
-## Troubleshooting
-
-**"No data available" message:**
-- Check API endpoint is running
-- Verify environment variables are set
-- Check browser console for errors
-
-**Build fails:**
-```bash
-rm -rf node_modules package-lock.json
-npm install
-npm run build
-```
-
-**Port already in use:**
-```bash
-npm run dev -- --port 3000
-```
+- Real-time data updates with WebSockets
+- Custom date range picker
+- Export data to CSV
+- Advanced filtering and segmentation
+- Comparison between time periods
+- User cohort analysis
 
 ## Support
 
-For issues or questions:
-1. Check the [Embrace API documentation](https://embrace.io/docs)
-2. Review Vite [setup guide](https://vitejs.dev/guide/)
-3. Check Vercel [deployment docs](https://vercel.com/docs)
+For issues or questions about:
+- **Dashboard**: Check the component files in `src/components/`
+- **Styling**: See `src/index.css` for custom styles
+- **API**: Refer to `api/login-events.js` for integration details
+- **Embrace Integration**: Visit https://embrace.io/docs
 
 ## License
 
-MIT - Feel free to use this project for your analytics needs!
+MIT
